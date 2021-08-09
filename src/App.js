@@ -70,21 +70,43 @@ const App = () => {
   };
 
   const createTask = async (content) => {
-    await todoList?.methods
-      .createTask(content)
-      .send({ from: account })
-      .once("receipt", (receipt) => {
-        setLoading(true);
-        setTaskInput("");
-        toast({
-          title: "Success",
-          description: "You created a new task.",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-          position: "top",
+    if (content) {
+      await todoList?.methods
+        .createTask(content)
+        .send({ from: account })
+        .once("receipt", (receipt) => {
+          setLoading(true);
+          setTaskInput("");
+          toast({
+            title: "Success",
+            description: "You created a new task.",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+            position: "top",
+          });
+        })
+        .on("error", (error, result) => {
+          loadBlockchainData();
+          toast({
+            title: "Reject",
+            description: "You rejected a transaction.",
+            status: "warning",
+            duration: 2000,
+            isClosable: true,
+            position: "top",
+          });
         });
+    } else {
+      toast({
+        title: "Info",
+        description: "Can't create empty task.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "top",
       });
+    }
   };
 
   const toggleCompleted = async (id) => {
